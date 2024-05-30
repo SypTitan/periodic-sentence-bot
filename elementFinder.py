@@ -33,10 +33,9 @@ def recreate_string(original: str, alphabet: dict = elements) -> str:
     """
     toProcess = [char.lower() for char in original if char.isalpha()]
     toProcess = ''.join(toProcess)
-    print("To process: "+toProcess)
-    return add_to_string(toProcess, alphabet)
+    return __add_to_string(toProcess, alphabet)
     
-def add_to_string(original: str, alphabet: dict) -> str:
+def __add_to_string(original: str, alphabet: dict) -> str:
     """
     Add to a string from the alphabet dictionary.
     """
@@ -51,7 +50,7 @@ def add_to_string(original: str, alphabet: dict) -> str:
     for option in options:
         output = option + ' '
         if (len(option) == 1):
-            output += add_to_string(original[1:], alphabet)
+            output += __add_to_string(original[1:], alphabet)
         else:
             if (len(option) > len(original)):
                 continue
@@ -60,7 +59,7 @@ def add_to_string(original: str, alphabet: dict) -> str:
                 if option[i] != original[i]:
                     optionFits = False
             if optionFits:
-                output += add_to_string(original[len(option):], alphabet)
+                output += __add_to_string(original[len(option):], alphabet)
             else:
                 output += '?'
         if '?' not in output:

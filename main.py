@@ -1,5 +1,5 @@
 import disnake, dotenv, os
-import elementFinder
+from elementFinder import recreate_string
 from disnake.ext import commands
 
 dotenv.load_dotenv()
@@ -12,13 +12,29 @@ if run_flask:
     print("Flask server started")
     
 intents = disnake.Intents.default()
-intents.messages = True
+intents.message_content = True
 bot = commands.Bot(intents=intents,command_prefix=disnake.ext.commands.when_mentioned)
 
 @bot.event
 async def on_ready():
     print(f"Bot started as {bot.user}")
     
-
+@bot.event
+async def on_message(message: disnake.Message):
+    if message.author == bot.user:
+        return
+    elementedMessage = recreate_string(message.content).strip()
+    if (len(elementedMessage.replace(' ','')) < 5 and bot.user not in message.mentions):
+        return
+    if '?' not in elementedMessage:
+        await message.reply("**Congrats! Your message can be spelled using the elements of the periodic table:**\n```" + elementedMessage+"```")
+        
+@bot.slash_command(name="spell", description="Spell your message using the elements of the periodic table")
+async def spell(inter: disnake.ApplicationCommandInteraction, message: str):
+    elementedMessage = recreate_string(message).strip()
+    if '?' not in elementedMessage:
+        await inter.response.send_message("**Your message can be spelled using the elements of the periodic table:**\n```" + elementedMessage+"```")
+    else:
+        await inter.response.send_message("Your message can't be spelled using the elements of the periodic table.", ephemeral=True)
     
 bot.run(bot_token)
