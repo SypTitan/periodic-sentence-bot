@@ -34,7 +34,7 @@ RUN adduser \
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
 # Leverage a bind mount to requirements.txt to avoid having to copy them into
 # into this layer.
-RUN python -m pip install --use-pep517 disnake flask dotenv
+RUN python -m pip install --use-pep517 setuptools disnake flask dotenv
 
 # Switch to the non-privileged user to run the application.
 USER appuser
