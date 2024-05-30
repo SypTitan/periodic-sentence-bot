@@ -8,7 +8,8 @@ run_flask = os.environ.get('RUNFLASK', 'False') == 'True'
 
 if run_flask:
     import keepalive
-    keepalive.keep_alive()
+    port = os.environ.get('PORT', 8000)
+    keepalive.keep_alive(port)
     print("Flask server started")
     
 intents = disnake.Intents.default()
