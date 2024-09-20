@@ -47,7 +47,7 @@ def __add_to_string(original: str, alphabet: dict) -> str:
     options = alphabet[original[0]]
     if len(options) == 0:
         return '?'
-    for option in options:
+    for option in reversed(options):
         output = option + ' '
         if (len(option) == 1):
             output += __add_to_string(original[1:], alphabet)

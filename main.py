@@ -2,9 +2,11 @@ import disnake, dotenv, os
 from elementFinder import recreate_string
 from disnake.ext import commands
 
-dotenv.load_dotenv()
-bot_token = os.environ.get('TOKEN')
-run_flask = os.environ.get('RUNFLASK', 'False') == 'True'
+try:
+    dotenv.load_dotenv()
+finally:
+    bot_token = os.environ.get('TOKEN')
+    run_flask = os.environ.get('RUNFLASK', 'False') == 'True'
 
 if run_flask:
     import keepalive
