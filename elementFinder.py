@@ -31,9 +31,21 @@ def recreate_string(original: str, alphabet: dict = elements) -> str:
     """
     Recreate a string from the alphabet dictionary.
     """
+    original = remove_emojis(original)
     toProcess = [char.lower() for char in original if char.isalpha()]
     toProcess = ''.join(toProcess)
     return __add_to_string(toProcess, alphabet)
+
+def remove_emojis(original: str) -> str:
+    """
+    Removes discord emojis from a string
+    """
+    original += ' '
+    splits = original.split(':')
+    for i in range(1, len(splits), 2):
+        if splits[i].isalpha() and splits[i].islower() and len(splits[i]) > 1 and len(splits[i]) < 33:
+            splits[i] = ""
+    return ''.join(splits)
     
 def __add_to_string(original: str, alphabet: dict) -> str:
     """
