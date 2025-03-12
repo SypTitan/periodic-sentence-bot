@@ -30,7 +30,7 @@ async def on_message(message: disnake.Message):
     if (len(elementedMessage.replace(' ','')) < 5 and bot.user not in message.mentions):
         return
     if '?' not in elementedMessage:
-        await message.reply("**Congrats! Your message can be spelled using the elements of the periodic table:**\n```" + elementedMessage+"```")
+        await message.reply("**Congrats! Your message can be spelled using the elements of the periodic table:**\n```" + elementedMessage+"```", mention_author=False)
         
 @bot.slash_command(name="spell", description="Spell your message using the elements of the periodic table")
 async def spell(inter: disnake.ApplicationCommandInteraction, message: str):
