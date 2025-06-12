@@ -27,21 +27,34 @@ elements = {'a':['Ac','Ag','Al','Am','Ar','As','At','Au'],
             'z':['Zn','Zr'],
             }
 
+MAX_REPEATS = 3
+MIN_VARIETY = 3
+
 def recreate_string(original: str, alphabet: dict = elements) -> str:
     """
     Recreate a string from the alphabet dictionary.
+    Main function, wrapping preprocessing and processing.
     """
+    # Pre-processing
     original = remove_emojis(original)
     toProcess = [char.lower() for char in original if char.isalpha()]
     toProcess = ''.join(toProcess)
-    return __add_to_string(toProcess, alphabet)
+    # Processing
+    out = __add_to_string(toProcess, alphabet)
+    # Post-processing
+    if (len(set(out.split(' ')[:-1])) <= MIN_VARIETY and len(toProcess) >= 2*MIN_VARIETY):
+        return '?'
+    return out
+    
 
 def remove_emojis(original: str) -> str:
     """
-    Removes discord emojis from a string
+    Removes discord emojis from a string.
     """
     original += ' '
     splits = original.split(':')
+    # Loop over all spaces enclosed by :
+    # Remove any that only consist of lowercase characters and are 2-32 characters long
     for i in range(1, len(splits), 2):
         if splits[i].isalpha() and splits[i].islower() and len(splits[i]) > 1 and len(splits[i]) < 33:
             splits[i] = ""
@@ -50,32 +63,48 @@ def remove_emojis(original: str) -> str:
 def __add_to_string(original: str, alphabet: dict) -> str:
     """
     Add to a string from the alphabet dictionary.
+    Uses recursive DFS to add single elements to the output.
     """
+    # Handle edge cases
     if len(original) == 0:
         return ''
     if original[0] not in alphabet:
         raise ValueError("Invalid character in string.")
     
+    # Limit options
     options = alphabet[original[0]]
     if len(options) == 0:
         return '?'
+    
+    # Find optimal option
     for option in reversed(options):
-        output = option + ' '
+        output: str = option + ' '
         if (len(option) == 1):
+            # Single-character element is guaranteed to fit
             output += __add_to_string(original[1:], alphabet)
         else:
+            # Multi-character element might not fit with following chars
             if (len(option) > len(original)):
                 continue
-            optionFits = True
+            # Check all characters, break if element doesn't fit
             for i in range(1,len(option)):
                 if option[i] != original[i]:
-                    optionFits = False
-            if optionFits:
-                output += __add_to_string(original[len(option):], alphabet)
+                    output += '?'
+                    break
             else:
-                output += '?'
+                output += __add_to_string(original[len(option):], alphabet)
+                
+        # Return first fitting element        
         if '?' not in output:
-            return output
+            # Check for double elements
+            output_split = output.split(' ')[:-1]
+            print(output_split)
+            if (len(output_split) < MAX_REPEATS):
+                return output
+            for i in range(MAX_REPEATS):
+                if (output_split[i] != option):
+                    return output
+    # Give up
     return '?'
                 
 
