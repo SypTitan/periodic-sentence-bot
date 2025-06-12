@@ -33,10 +33,10 @@ async def on_message(message: disnake.Message):
         await message.reply("**Congrats! Your message can be spelled using the elements of the periodic table:**\n```" + elementedMessage+"```", mention_author=False)
         
 @bot.slash_command(name="spell", description="Spell your message using the elements of the periodic table")
-async def spell(inter: disnake.ApplicationCommandInteraction, message: str):
-    elementedMessage = recreate_string(message).strip()
-    if '?' not in elementedMessage:
-        await inter.response.send_message("**Your message can be spelled using the elements of the periodic table:**\n```" + elementedMessage+"```")
+async def spell(inter: disnake.ApplicationCommandInteraction, message: str, hidden: bool = False, enforce_rules: bool = False):
+    elementedMessage = recreate_string(message, ignore_repeats=(not enforce_rules)).strip()
+    if ('?' not in elementedMessage and ((not enforce_rules) or len(elementedMessage.replace(' ','')) < 5)):
+        await inter.response.send_message("**Your message can be spelled using the elements of the periodic table:**\n```" + elementedMessage+"```", ephemeral=hidden)
     else:
         await inter.response.send_message("Your message can't be spelled using the elements of the periodic table.", ephemeral=True)
     

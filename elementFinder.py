@@ -30,7 +30,7 @@ elements = {'a':['Ac','Ag','Al','Am','Ar','As','At','Au'],
 MAX_REPEATS = 3
 MIN_VARIETY = 3
 
-def recreate_string(original: str, alphabet: dict = elements) -> str:
+def recreate_string(original: str, alphabet: dict = elements, ignore_repeats: bool = False) -> str:
     """
     Recreate a string from the alphabet dictionary.
     Main function, wrapping preprocessing and processing.
@@ -40,8 +40,11 @@ def recreate_string(original: str, alphabet: dict = elements) -> str:
     toProcess = [char.lower() for char in original if char.isalpha()]
     toProcess = ''.join(toProcess)
     # Processing
-    out = __add_to_string(toProcess, alphabet)
+    out = __add_to_string(toProcess, alphabet, ignore_repeats)
     # Post-processing
+    if (ignore_repeats):
+        return out
+    
     if (len(set(out.split(' ')[:-1])) <= MIN_VARIETY and len(toProcess) >= 2*MIN_VARIETY):
         return '?'
     return out
@@ -60,7 +63,7 @@ def remove_emojis(original: str) -> str:
             splits[i] = ""
     return ''.join(splits)
     
-def __add_to_string(original: str, alphabet: dict) -> str:
+def __add_to_string(original: str, alphabet: dict, ignore_repeats: bool) -> str:
     """
     Add to a string from the alphabet dictionary.
     Uses recursive DFS to add single elements to the output.
@@ -81,7 +84,7 @@ def __add_to_string(original: str, alphabet: dict) -> str:
         output: str = option + ' '
         if (len(option) == 1):
             # Single-character element is guaranteed to fit
-            output += __add_to_string(original[1:], alphabet)
+            output += __add_to_string(original[1:], alphabet, ignore_repeats)
         else:
             # Multi-character element might not fit with following chars
             if (len(option) > len(original)):
@@ -92,13 +95,14 @@ def __add_to_string(original: str, alphabet: dict) -> str:
                     output += '?'
                     break
             else:
-                output += __add_to_string(original[len(option):], alphabet)
+                output += __add_to_string(original[len(option):], alphabet, ignore_repeats)
                 
         # Return first fitting element        
         if '?' not in output:
+            if (ignore_repeats):
+                return output
             # Check for double elements
             output_split = output.split(' ')[:-1]
-            print(output_split)
             if (len(output_split) < MAX_REPEATS):
                 return output
             for i in range(MAX_REPEATS):
